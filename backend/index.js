@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import db from "./db.js";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 //(health check)
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: 'Servidor funcionando correctamente con pnpm' });
 });
 

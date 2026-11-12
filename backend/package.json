@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db-conex": "node test-db-connection.js"
+    "db-conex": "node test-db-connection.js",
+    "dev":"node index.js"
   },
   "keywords": [],
   "author": "",
