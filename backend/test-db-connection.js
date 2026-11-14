@@ -1,4 +1,4 @@
-import db from "./src/config/db.js";
+import {db} from "./src/config/db.js";
 
 async function testConnection() {
   try {
@@ -10,6 +10,8 @@ async function testConnection() {
     );
   } catch (error) {
     console.error("Error al conectar a la base de datos:", error);
+  } finally {
+    await db.end();
   }
 }
 
