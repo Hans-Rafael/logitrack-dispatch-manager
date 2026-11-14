@@ -109,7 +109,7 @@ export async function obtenerPedidoPorId(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-// PUT /api/pedidos/:id - Actualizar estado del pedido
+// PATCHi/pedidos/:id - Actualizar estado del pedido
 export async function actualizarPedido(req, res) {
   const { id } = req.params;
   const { estado } = req.body;
