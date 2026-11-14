@@ -61,7 +61,6 @@ export async function crearPedido(req, res) {
 }
 // GET /api/pedidos - Listar todos los pedidos
 export async function obtenerPedidos(req, res) {
-  const { id } = req.params;
   try {
     const query = `
       SELECT id, cliente_nombre, direccion_destino, localidad, provincia, 
@@ -70,17 +69,14 @@ export async function obtenerPedidos(req, res) {
       FROM pedidos 
       ORDER BY created_at DESC;
     `;
-    const resultado = await db.query(query, [id]);
+    const resultado = await db.query(query);
 
-    if (resultado.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ error: `Pedido con ID ${id} no encontrado.` });
-    }
-
-    return res.status(200).json(resultado.rows[0]);
+    return res.status(200).json({
+      total: resultado.rows.length,
+      pedidos: resultado.rows,
+    });
   } catch (error) {
-    console.error("Error al obtener el pedido:", error.message);
+    console.error("Error al obtener pedidos:", error.message);
     return res.status(500).json({ error: error.message });
   }
 }
@@ -109,7 +105,7 @@ export async function obtenerPedidoPorId(req, res) {
     return res.status(500).json({ error: error.message });
   }
 }
-// PATCHi/pedidos/:id - Actualizar estado del pedido
+// PATCH /api/pedidos/:id - Actualizar estado del pedido
 export async function actualizarPedido(req, res) {
   const { id } = req.params;
   const { estado } = req.body;
