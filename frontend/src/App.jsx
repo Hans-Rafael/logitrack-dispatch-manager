@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import PedidoForm from './components/PedidoForm';
 import PedidoList from './components/PedidoList';
@@ -7,6 +8,7 @@ import { obtenerPedidos, verificarSalud } from './services/pedidosService';
 const INTERVALO_HEALTH_MS = 30000;
 
 export default function App() {
+  const { t } = useLanguage();
   const [pedidos, setPedidos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -73,7 +75,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       {/* Barra superior */}
       <Navbar totalPedidos={pedidos.length} conectado={apiActiva} />
 
@@ -83,8 +85,8 @@ export default function App() {
         
         {/* Alerta de error si el backend está apagado */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-            <strong>Error de conexión:</strong> {error}. Verifica que el servidor backend esté corriendo en el puerto 3000.
+          <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
+            <strong>{t('connErrorTitle')}</strong> {error}. {t('connErrorBody')}
           </div>
         )}
 
@@ -92,20 +94,20 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Columna Izquierda: Formulario */}
-          <section className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-1">
-              Nuevo Despacho
+          <section className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1">
+              {t('newDispatch')}
             </h2>
-            <p className="text-xs text-slate-500 mb-5">
-              Se obtendrá geolocalización y clima automáticamente.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+              {t('newDispatchDesc')}
             </p>
             <PedidoForm onPedidoCreado={cargarPedidos} />
           </section>
 
           {/* Columna Derecha: Lista de Pedidos */}
-          <section className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">
-              Envíos Activos
+          <section className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">
+              {t('activeShipments')}
             </h2>
 
             {/* Buscador y filtros por estado */}
@@ -115,15 +117,15 @@ export default function App() {
                   type="text"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  placeholder="Buscar por cliente, producto, dirección o localidad..."
-                  className="w-full text-sm bg-white border border-slate-300 rounded-lg pl-3 pr-9 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600"
+                  placeholder={t('searchPlaceholder')}
+                  className="w-full text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg pl-3 pr-9 py-2 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
                 />
                 {busqueda && (
                   <button
                     type="button"
                     onClick={() => setBusqueda('')}
-                    aria-label="Borrar búsqueda"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                    aria-label={t('clearSearch')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-100 dark:hover:bg-slate-700 cursor-pointer"
                   >
                     ✕
                   </button>
@@ -131,11 +133,11 @@ export default function App() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { valor: 'todos', etiqueta: 'Todos' },
-                  { valor: 'pendiente', etiqueta: 'Pendiente' },
-                  { valor: 'en_camino', etiqueta: 'En camino' },
-                  { valor: 'entregado', etiqueta: 'Entregado' },
-                  { valor: 'cancelado', etiqueta: 'Cancelado' },
+                  { valor: 'todos', etiqueta: t('filterAll') },
+                  { valor: 'pendiente', etiqueta: t('filterPending') },
+                  { valor: 'en_camino', etiqueta: t('filterInTransit') },
+                  { valor: 'entregado', etiqueta: t('filterDelivered') },
+                  { valor: 'cancelado', etiqueta: t('filterCancelled') },
                 ].map(({ valor, etiqueta }) => {
                   const activo = filtroEstado === valor;
                   const cantidad =
@@ -148,7 +150,7 @@ export default function App() {
                       className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
                         activo
                           ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 dark:hover:bg-slate-700'
                       }`}
                     >
                       {etiqueta} ({cantidad})
@@ -162,22 +164,22 @@ export default function App() {
                       setBusqueda('');
                       setFiltroEstado('todos');
                     }}
-                    className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline px-2 py-1.5 cursor-pointer"
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 underline px-2 py-1.5 cursor-pointer"
                   >
-                    Limpiar filtros
+                    {t('clearFilters')}
                   </button>
                 )}
               </div>
             </div>
 
             {cargando ? (
-              <p className="text-sm text-slate-500 animate-pulse">
-                Cargando pedidos desde la base de datos...
+              <p className="text-sm text-slate-500 dark:text-slate-400 animate-pulse">
+                {t('loading')}
               </p>
             ) : error ? (
-              <p className="text-sm text-slate-400">No se pudieron cargar los pedidos.</p>
+              <p className="text-sm text-slate-400">{t('loadFailed')}</p>
             ) : (
-              <PedidoList pedidos={pedidosFiltrados}onActualizar={cargarPedidos} />
+              <PedidoList pedidos={pedidosFiltrados} onActualizar={cargarPedidos} />
             )}
           </section>
 
