@@ -1,8 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// 0. Health check del backend (GET /api/health). Devuelve true/false, nunca lanza.
+export async function verificarSalud() {
+  try {
+    const response = await fetch(`${API_URL}/health`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 // 1. Obtener todos los pedidos (GET)
 export async function obtenerPedidos() {
-  const response = await fetch(API_URL);
+  const response = await fetch(`${API_URL}/pedidos`);
   if (!response.ok) {
     throw new Error('Error al obtener la lista de pedidos');
   }
@@ -11,7 +23,7 @@ export async function obtenerPedidos() {
 
 // 2. Obtener un pedido por ID (GET /:id)
 export async function obtenerPedidoPorId(id) {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API_URL}/pedidos/${id}`);
   if (!response.ok) {
     throw new Error(`No se pudo encontrar el pedido #${id}`);
   }
@@ -20,7 +32,7 @@ export async function obtenerPedidoPorId(id) {
 
 // 3. Crear un nuevo pedido (POST)
 export async function crearPedido(datosPedido) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_URL}/pedidos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +49,7 @@ export async function crearPedido(datosPedido) {
 
 // 4. Actualizar estado del pedido (PATCH /:id)
 export async function actualizarEstadoPedido(id, nuevoEstado) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${API_URL}/pedidos/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -54,7 +66,7 @@ export async function actualizarEstadoPedido(id, nuevoEstado) {
 
 // 5. Eliminar un pedido (DELETE /:id)
 export async function eliminarPedido(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${API_URL}/pedidos/${id}`, {
     method: 'DELETE',
   });
 
